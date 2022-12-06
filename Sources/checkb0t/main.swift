@@ -23,11 +23,18 @@ router["greet"] = { context in
 }
 
 router[.newChatMembers] = { context in
-    guard let users = context.message?.newChatMembers else { return false }
+    guard let users = context.message?.newChatMembers,
+          let chatId = context.chatId,
+          let messageId = context.message?.messageId
+    else { return false }
+    
     for user in users {
         guard user.id != bot.user.id else { return false }
         context.respondAsync("W3lc0m3, \(user.firstName)!")
     }
+    
+    bot.deleteMessageAsync(chatId: ChatId.chat(chatId), messageId: messageId)
+    
     return true
 }
 
